@@ -45,6 +45,24 @@ def read_settings():
         sys.exit(SETTINGS + " is not valid JSON (" + str(error) + "). Fix it, then run this script again.")
 
 
+def validate_settings(settings):
+    hooks = settings.get("hooks", {})
+    if not isinstance(hooks, dict):
+        sys.exit(SETTINGS + " has a hooks value that is not an object. Fix it, then run this script again.")
+    for event, groups in hooks.items():
+        if not isinstance(groups, list):
+            sys.exit(SETTINGS + " has hooks." + event + " set to a non-list value. Fix it, then run this script again.")
+        for group in groups:
+            if not isinstance(group, dict):
+                sys.exit(SETTINGS + " has a hook group that is not an object. Fix it, then run this script again.")
+            group_hooks = group.get("hooks", [])
+            if not isinstance(group_hooks, list):
+                sys.exit(SETTINGS + " has a hooks list that is not a list. Fix it, then run this script again.")
+            for hook in group_hooks:
+                if not isinstance(hook, dict):
+                    sys.exit(SETTINGS + " has a hook that is not an object. Fix it, then run this script again.")
+
+
 def write_settings(settings):
     write(SETTINGS, json.dumps(settings, indent=2) + "\n")
 
@@ -66,6 +84,7 @@ def reminder_command():
 def install():
     os.makedirs(CLAUDE, exist_ok=True)
     settings = read_settings()
+    validate_settings(settings)
 
     claude_md = read(CLAUDE_MD)
     if START in claude_md:
@@ -98,6 +117,7 @@ def install():
 
 def uninstall():
     settings = read_settings()
+    validate_settings(settings)
     claude_md = read(CLAUDE_MD)
     if START in claude_md and END in claude_md:
         backup(CLAUDE_MD)
