@@ -48,6 +48,6 @@ The reminder is text. It makes simple English more likely, but nothing checks th
 |---|---|
 | `install.sh` | Installs the kit |
 | `uninstall.sh` | Removes the kit |
-| `explainer.html` | Explains how the two parts work. Open it in a browser. |
+| `EXPLAINER.md` | Explains how the two parts work |
 | `kit/writing-rules.md` | The rules that go into `CLAUDE.md` |
 | `kit/ste.py` | The install and uninstall logic |
