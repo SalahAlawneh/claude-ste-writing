@@ -24,7 +24,7 @@ cd claude-ste-writing
 
 Then start a new Claude Code session.
 
-The installer backs up each file before it changes it. You can run it more than once; it never adds a duplicate.
+The installer backs up each file before it changes it. Backup files use the suffix `.bak-YYYYMMDD-HHMMSS`. You can run the installer more than once; it never adds a duplicate.
 
 ## Check that it works
 

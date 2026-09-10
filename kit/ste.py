@@ -11,7 +11,6 @@ CLAUDE_MD = os.path.join(CLAUDE, "CLAUDE.md")
 SETTINGS = os.path.join(CLAUDE, "settings.json")
 START = "<!-- ste100-writing:start -->"
 END = "<!-- ste100-writing:end -->"
-REMINDER_TAG = "STE100"
 REMINDER = (
     "Apply the STE100 writing rules from the session instructions. "
     "Before returning the answer, check for short sentences, active voice, "
@@ -50,8 +49,8 @@ def write_settings(settings):
     write(SETTINGS, json.dumps(settings, indent=2) + "\n")
 
 
-def has_command(groups, tag):
-    return any(tag in hook.get("command", "") for group in groups for hook in group.get("hooks", []))
+def has_command(groups, command):
+    return any(hook.get("command", "") == command for group in groups for hook in group.get("hooks", []))
 
 
 def reminder_command():
@@ -82,10 +81,11 @@ def install():
     changed = False
 
     prompt_hooks = hooks.setdefault("UserPromptSubmit", [])
-    if has_command(prompt_hooks, REMINDER_TAG):
+    command = reminder_command()
+    if has_command(prompt_hooks, command):
         print("Reminder hook:      already installed")
     else:
-        prompt_hooks.append({"hooks": [{"type": "command", "command": reminder_command(), "timeout": 5}]})
+        prompt_hooks.append({"hooks": [{"type": "command", "command": command, "timeout": 5}]})
         changed = True
         print("Reminder hook:      added to ~/.claude/settings.json")
 
@@ -110,10 +110,10 @@ def uninstall():
         print("Writing rules:      not installed")
 
     hooks = settings.get("hooks", {})
+    command = reminder_command()
 
     def is_ours(hook):
-        command = hook.get("command", "")
-        return REMINDER_TAG in command
+        return hook.get("command", "") == command
 
     removed = sum(1 for groups in hooks.values() for group in groups for hook in group.get("hooks", []) if is_ours(hook))
     if removed:
